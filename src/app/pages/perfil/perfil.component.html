@@ -1,0 +1,70 @@
+<div class="perfil-container">
+  @if (user(); as u) {
+    <div class="perfil-layout">
+      <!-- Tarjeta de usuario -->
+      <aside class="perfil-card">
+        <div class="avatar">{{ u.nombre.charAt(0).toUpperCase() }}</div>
+        <h2 class="perfil-nombre">{{ u.nombre }}</h2>
+        <p class="perfil-email">{{ u.email }}</p>
+        <span class="perfil-rol" [class.rol-admin]="u.rol === 'ADMIN'">{{ u.rol }}</span>
+        <div class="perfil-actions">
+          <a routerLink="/tienda" class="btn-outline">Ver tienda</a>
+          @if (u.rol !== 'ADMIN') {
+            <a routerLink="/carrito" class="btn-outline">Mi carrito</a>
+          }
+          <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+        </div>
+      </aside>
+
+      <!-- Historial de pedidos -->
+      <section class="pedidos-section">
+        <h2 class="section-title">Mis Pedidos</h2>
+
+        @if (loadingPedidos) {
+          <div class="state-msg"><span class="spinner"></span> Cargando pedidos...</div>
+        } @else if (pedidos.length === 0) {
+          <div class="empty-state">
+            <span class="empty-icon">📦</span>
+            <p>Aún no tienes pedidos.</p>
+            <a routerLink="/tienda" class="btn-primary">Ir a la tienda</a>
+          </div>
+        } @else {
+          <div class="pedidos-list">
+            @for (p of pedidos; track p.id) {
+              <div class="pedido-item">
+                <div class="pedido-header" (click)="toggleExpand(p.id)">
+                  <div class="pedido-meta">
+                    <span class="pedido-id">#{{ p.id }}</span>
+                    <span class="pedido-fecha">{{ p.fecha | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                  <div class="pedido-right">
+                    <span [class]="'estado-badge ' + estadoClass(p.estado)">{{ p.estado }}</span>
+                    <span class="pedido-total">{{ p.total | currency:'USD':'symbol':'1.2-2' }}</span>
+                    <span class="expand-icon">{{ expandedId === p.id ? '▲' : '▼' }}</span>
+                  </div>
+                </div>
+
+                @if (expandedId === p.id) {
+                  <div class="pedido-items">
+                    @for (item of p.items; track item.id) {
+                      <div class="pedido-item-row">
+                        <span class="item-titulo">{{ item.videojuegoTitulo }}</span>
+                        <span class="item-qty">x{{ item.cantidad }}</span>
+                        <span class="item-subtotal">{{ item.subtotal | currency:'USD':'symbol':'1.2-2' }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  } @else {
+    <div class="not-logged">
+      <p>Debes iniciar sesión para ver tu perfil.</p>
+      <a routerLink="/login" class="btn-primary">Iniciar sesión</a>
+    </div>
+  }
+</div>

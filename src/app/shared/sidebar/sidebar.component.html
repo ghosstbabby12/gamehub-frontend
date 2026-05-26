@@ -1,0 +1,20 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-icon">🎮</span>
+    <span class="sidebar-title">GameHub</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    @if (loading()) {
+      <p class="sidebar-status">Cargando menú...</p>
+    } @else if (error()) {
+      <p class="sidebar-status sidebar-error">Error al cargar menú</p>
+    } @else {
+      <ul class="menu-root">
+        @for (item of menu(); track item.id) {
+          <app-menu-item [item]="item" />
+        }
+      </ul>
+    }
+  </nav>
+</aside>

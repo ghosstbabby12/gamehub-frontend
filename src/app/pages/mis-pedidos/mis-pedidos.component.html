@@ -1,0 +1,58 @@
+<div class="pedidos-container">
+  <h1>Mis Pedidos</h1>
+
+  @if (loading) {
+    <div class="state-msg"><span class="spinner"></span> Cargando pedidos...</div>
+  } @else if (pedidos.length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">📦</span>
+      <h2>No tienes pedidos aún</h2>
+      <p>¡Haz tu primera compra en la tienda!</p>
+    </div>
+  } @else {
+    <div class="pedidos-list">
+      @for (pedido of pedidos; track pedido.id) {
+        <div class="pedido-card">
+          <div class="pedido-header" (click)="toggleExpand(pedido.id)">
+            <div class="pedido-meta">
+              <span class="pedido-id">#{{ pedido.id }}</span>
+              <span class="pedido-fecha">{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="pedido-actions">
+              <span [class]="'estado-badge ' + estadoClass(pedido.estado)">
+                {{ pedido.estado }}
+              </span>
+              <span class="pedido-total">{{ pedido.total | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span class="expand-icon">{{ expandedId === pedido.id ? '▲' : '▼' }}</span>
+            </div>
+          </div>
+
+          @if (expandedId === pedido.id) {
+            <div class="pedido-items">
+              <table class="items-table">
+                <thead>
+                  <tr>
+                    <th>Juego</th>
+                    <th>Cant.</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of pedido.items; track item.id) {
+                    <tr>
+                      <td>{{ item.videojuegoTitulo }}</td>
+                      <td>{{ item.cantidad }}</td>
+                      <td>{{ item.precioUnitario | currency:'USD':'symbol':'1.2-2' }}</td>
+                      <td>{{ item.subtotal | currency:'USD':'symbol':'1.2-2' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

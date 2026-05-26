@@ -1,0 +1,73 @@
+.pedidos-container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+.pedidos-container h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  background: linear-gradient(135deg, #ede8ff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.state-msg { text-align: center; color: rgba(136,120,170,0.5); padding: 4rem 0; display: flex; align-items: center; justify-content: center; gap: 0.75rem; font-weight: 600; }
+.spinner { width: 20px; height: 20px; border: 2px solid rgba(124,58,237,0.2); border-top-color: #a78bfa; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; box-shadow: 0 0 8px rgba(124,58,237,0.4); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state { text-align: center; padding: 5rem 2rem; color: rgba(136,120,170,0.6); }
+.empty-icon { font-size: 3rem; display: block; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(167,139,250,0.6)); }
+.empty-state h2 { font-size: 1.4rem; font-weight: 700; color: #ede8ff; margin-bottom: 0.5rem; }
+
+.pedidos-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.pedido-card {
+  background: rgba(8,5,22,0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(124,58,237,0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.pedido-card:hover { border-color: rgba(124,58,237,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 15px rgba(124,58,237,0.08); }
+
+.pedido-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.pedido-header:hover { background: rgba(124,58,237,0.06); }
+
+.pedido-meta { display: flex; gap: 1rem; align-items: center; }
+.pedido-id { font-family: 'Press Start 2P', monospace; font-size: 0.65rem; color: rgba(167,139,250,0.8); }
+.pedido-fecha { font-size: 0.85rem; color: rgba(136,120,170,0.6); font-weight: 500; }
+
+.pedido-actions { display: flex; align-items: center; gap: 1rem; }
+
+.estado-badge { font-size: 0.6rem; font-family: 'Press Start 2P', monospace; padding: 0.22rem 0.55rem; border-radius: 4px; white-space: nowrap; }
+.estado-pendiente  { background: rgba(245,158,11,0.1); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+.estado-confirmado { background: rgba(124,58,237,0.1); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+.estado-enviado    { background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
+.estado-entregado  { background: rgba(0,230,118,0.08); color: #00e676; border: 1px solid rgba(0,230,118,0.25); }
+.estado-cancelado  { background: rgba(239,68,68,0.08); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+
+.pedido-total { font-weight: 700; color: #00e676; text-shadow: 0 0 8px rgba(0,230,118,0.4); font-size: 1rem; }
+.expand-icon { color: rgba(136,120,170,0.4); font-size: 0.75rem; }
+
+.pedido-items {
+  border-top: 1px solid rgba(124,58,237,0.1);
+  padding: 1rem 1.25rem;
+  background: rgba(4,3,12,0.5);
+  backdrop-filter: blur(8px);
+}
+
+.items-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.items-table th { text-align: left; padding: 0.5rem 0.75rem; color: rgba(136,120,170,0.5); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid rgba(124,58,237,0.1); }
+.items-table td { padding: 0.6rem 0.75rem; color: rgba(200,190,240,0.75); font-weight: 500; border-bottom: 1px solid rgba(124,58,237,0.05); }
+.items-table tr:last-child td { border-bottom: none; }

@@ -1,0 +1,78 @@
+<div class="detalle-container">
+  <a class="back-link" routerLink="/tienda">← Volver a la tienda</a>
+
+  @if (loading) {
+    <div class="state-msg"><span class="spinner"></span> Cargando...</div>
+  } @else if (errorMsg) {
+    <div class="state-error">{{ errorMsg }}</div>
+  } @else if (juego) {
+    <div class="detalle-card">
+      <div class="detalle-image-col">
+        @if (juego.imagenUrl) {
+          <img [src]="juego.imagenUrl" [alt]="juego.titulo" class="detalle-img" />
+        } @else {
+          <div class="detalle-img-placeholder">🎮</div>
+        }
+        <div class="badge-row">
+          <span class="badge platform">{{ juego.plataforma }}</span>
+          @if (juego.genero) {
+            <span class="badge genre">{{ juego.genero }}</span>
+          }
+          @if (juego.categoriaNombre) {
+            <span class="badge category">{{ juego.categoriaNombre }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="detalle-info-col">
+        <h1 class="detalle-titulo">{{ juego.titulo }}</h1>
+        @if (juego.descripcion) {
+          <p class="detalle-desc">{{ juego.descripcion }}</p>
+        }
+
+        <div class="detalle-meta">
+          @if (juego.fechaLanzamiento) {
+            <div class="meta-item">
+              <span class="meta-label">Lanzamiento</span>
+              <span class="meta-value">{{ juego.fechaLanzamiento | date:'dd/MM/yyyy' }}</span>
+            </div>
+          }
+          <div class="meta-item">
+            <span class="meta-label">Stock</span>
+            <span class="meta-value" [class.stock-out]="juego.stock === 0">
+              {{ juego.stock === 0 ? 'Agotado' : juego.stock + ' unidades' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="detalle-purchase">
+          <span class="detalle-precio">{{ juego.precio | currency:'USD':'symbol':'1.2-2' }}</span>
+
+          @if (cartMsg) {
+            <div class="toast-success">{{ cartMsg }}</div>
+          }
+
+          <button
+            class="btn-cart"
+            (click)="agregarAlCarrito()"
+            [disabled]="addingToCart || juego.stock === 0 || !juego.disponible"
+          >
+            @if (juego.stock === 0) {
+              Sin stock
+            } @else if (!juego.disponible) {
+              No disponible
+            } @else if (addingToCart) {
+              Agregando...
+            } @else {
+              🛒 Agregar al carrito
+            }
+          </button>
+
+          @if (!isLoggedIn()) {
+            <p class="login-hint"><a routerLink="/login">Inicia sesión</a> para comprar</p>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

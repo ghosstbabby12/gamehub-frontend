@@ -1,0 +1,77 @@
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2>Panel Admin</h2>
+    <nav>
+      <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">📊 Dashboard</a>
+      <a routerLink="/admin/videojuegos" routerLinkActive="active">🎮 Videojuegos</a>
+      <a routerLink="/admin/categorias" routerLinkActive="active">🗂️ Categorías</a>
+      <a routerLink="/admin/pedidos" routerLinkActive="active">📦 Pedidos</a>
+      <a routerLink="/admin/usuarios" routerLinkActive="active">👥 Usuarios</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-page-header">
+      <div>
+        <h1>Usuarios</h1>
+        <p>Gestiona los usuarios registrados</p>
+      </div>
+      <select [(ngModel)]="filtroRol" (change)="applyFilter()" class="filter-select">
+        <option value="">Todos los roles</option>
+        <option value="USER">USER</option>
+        <option value="ADMIN">ADMIN</option>
+      </select>
+    </div>
+
+    @if (successMsg) { <div class="alert-success">{{ successMsg }}</div> }
+    @if (errorMsg)   { <div class="alert-error">{{ errorMsg }}</div> }
+
+    @if (loading) {
+      <div class="state-msg"><span class="spinner"></span> Cargando...</div>
+    } @else if (filtered.length === 0) {
+      <div class="state-msg">No hay usuarios.</div>
+    } @else {
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of filtered; track u.id) {
+              <tr>
+                <td>{{ u.id }}</td>
+                <td class="col-nombre">{{ u.nombre }}</td>
+                <td class="col-email">{{ u.email }}</td>
+                <td>
+                  @if (editingId === u.id) {
+                    <select [(ngModel)]="editRol" class="rol-select">
+                      <option value="USER">USER</option>
+                      <option value="ADMIN">ADMIN</option>
+                    </select>
+                  } @else {
+                    <span [class]="'rol-badge ' + rolClass(u.rol)">{{ u.rol }}</span>
+                  }
+                </td>
+                <td class="actions-cell">
+                  @if (editingId === u.id) {
+                    <button class="btn-save" (click)="saveRol(u)">Guardar</button>
+                    <button class="btn-cancel" (click)="cancelEdit()">Cancelar</button>
+                  } @else {
+                    <button class="btn-edit" (click)="startEdit(u)">Editar</button>
+                    <button class="btn-delete" (click)="eliminar(u.id)">Eliminar</button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </main>
+</div>

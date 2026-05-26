@@ -1,0 +1,185 @@
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2>Panel Admin</h2>
+    <nav>
+      <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">📊 Dashboard</a>
+      <a routerLink="/admin/videojuegos" routerLinkActive="active">🎮 Videojuegos</a>
+      <a routerLink="/admin/categorias" routerLinkActive="active">🗂️ Categorías</a>
+      <a routerLink="/admin/pedidos" routerLinkActive="active">📦 Pedidos</a>
+      <a routerLink="/admin/usuarios" routerLinkActive="active">👥 Usuarios</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-page-header">
+      <div>
+        <h1>Videojuegos</h1>
+        <p>Gestiona el catálogo de videojuegos</p>
+      </div>
+      <button class="btn-new" (click)="showCreate()">+ Nuevo Videojuego</button>
+    </div>
+
+    @if (successMsg) {
+      <div class="alert-success">{{ successMsg }}</div>
+    }
+
+    @if (showForm) {
+      <div class="form-panel">
+        <h2>{{ editingId ? 'Editar Videojuego' : 'Nuevo Videojuego' }}</h2>
+        <form #vForm="ngForm" (ngSubmit)="save()" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Título *</label>
+              <input name="titulo" type="text" [(ngModel)]="formModel.titulo"
+                #tituloF="ngModel" required placeholder="Nombre del juego"
+                [class.input-error]="tituloF.invalid && tituloF.touched" />
+              @if (tituloF.invalid && tituloF.touched) {
+                <span class="field-error">Requerido</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Precio *</label>
+              <input name="precio" type="number" [(ngModel)]="formModel.precio"
+                #precioF="ngModel" required min="0" step="0.01" placeholder="0.00"
+                [class.input-error]="precioF.invalid && precioF.touched" />
+              @if (precioF.invalid && precioF.touched) {
+                <span class="field-error">Precio inválido</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Stock *</label>
+              <input name="stock" type="number" [(ngModel)]="formModel.stock"
+                #stockF="ngModel" required min="0" placeholder="0"
+                [class.input-error]="stockF.invalid && stockF.touched" />
+              @if (stockF.invalid && stockF.touched) {
+                <span class="field-error">Requerido</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Plataforma *</label>
+              <select name="plataforma" [(ngModel)]="formModel.plataforma"
+                #plataformaF="ngModel" required
+                [class.input-error]="plataformaF.invalid && plataformaF.touched">
+                <option value="">Seleccionar...</option>
+                @for (p of plataformas; track p) {
+                  <option [value]="p">{{ p }}</option>
+                }
+              </select>
+              @if (plataformaF.invalid && plataformaF.touched) {
+                <span class="field-error">Requerido</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Género *</label>
+              <select name="genero" [(ngModel)]="formModel.genero"
+                #generoF="ngModel" required
+                [class.input-error]="generoF.invalid && generoF.touched">
+                <option value="">Seleccionar...</option>
+                @for (g of generos; track g) {
+                  <option [value]="g">{{ g }}</option>
+                }
+              </select>
+              @if (generoF.invalid && generoF.touched) {
+                <span class="field-error">Requerido</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Categoría *</label>
+              <select name="categoriaId" [(ngModel)]="formModel.categoriaId"
+                #catF="ngModel" required
+                [class.input-error]="catF.invalid && catF.touched">
+                <option [value]="0">Seleccionar...</option>
+                @for (cat of categorias; track cat.id) {
+                  <option [value]="cat.id">{{ cat.nombre }}</option>
+                }
+              </select>
+              @if (catF.invalid && catF.touched) {
+                <span class="field-error">Requerido</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Fecha de Lanzamiento</label>
+              <input name="fechaLanzamiento" type="date"
+                [(ngModel)]="formModel.fechaLanzamiento" />
+            </div>
+
+            <div class="form-group">
+              <label>URL de Imagen</label>
+              <input name="imagenUrl" type="url" [(ngModel)]="formModel.imagenUrl"
+                placeholder="https://..." />
+            </div>
+
+            <div class="form-group full-width">
+              <label>Descripción</label>
+              <textarea name="descripcion" [(ngModel)]="formModel.descripcion"
+                rows="3" placeholder="Descripción del juego..."></textarea>
+            </div>
+          </div>
+
+          @if (errorMsg) {
+            <div class="alert-error">{{ errorMsg }}</div>
+          }
+
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" (click)="cancelForm()">Cancelar</button>
+            <button type="submit" class="btn-save" [disabled]="vForm.invalid || saving">
+              @if (saving) { Guardando... } @else { Guardar }
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (loading) {
+      <div class="state-msg"><span class="spinner"></span> Cargando...</div>
+    } @else if (videojuegos.length === 0) {
+      <div class="state-msg">No hay videojuegos registrados.</div>
+    } @else {
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>#</th>
+              <th>Título</th>
+              <th>Plataforma</th>
+              <th>Género</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (game of videojuegos; track game.id) {
+              <tr>
+                <td class="col-thumb">
+                  @if (game.imagenUrl) {
+                    <img [src]="game.imagenUrl" [alt]="game.titulo" class="game-thumb" />
+                  } @else {
+                    <div class="thumb-placeholder">🎮</div>
+                  }
+                </td>
+                <td>{{ game.id }}</td>
+                <td class="col-title">{{ game.titulo }}</td>
+                <td><span class="badge-platform">{{ game.plataforma }}</span></td>
+                <td>{{ game.genero }}</td>
+                <td>{{ game.precio | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td [class.stock-low]="game.stock < 5">{{ game.stock }}</td>
+                <td class="col-actions">
+                  <button class="btn-edit" (click)="showEdit(game)">Editar</button>
+                  <button class="btn-delete" (click)="eliminar(game.id)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </main>
+</div>

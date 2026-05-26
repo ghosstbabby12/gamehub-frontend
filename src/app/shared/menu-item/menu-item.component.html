@@ -1,0 +1,24 @@
+<li class="menu-item" [class.has-children]="hasChildren" [class.open]="open()">
+  @if (item.ruta && !hasChildren) {
+    <a class="menu-link" [routerLink]="routePath" [queryParams]="queryParams" routerLinkActive="active">
+      @if (item.icono) { <span class="menu-icon">{{ item.icono }}</span> }
+      <span class="menu-label">{{ item.nombre }}</span>
+    </a>
+  } @else {
+    <button class="menu-link menu-toggle" (click)="toggle()">
+      @if (item.icono) { <span class="menu-icon">{{ item.icono }}</span> }
+      <span class="menu-label">{{ item.nombre }}</span>
+      @if (hasChildren) {
+        <span class="menu-arrow" [class.rotated]="open()">▸</span>
+      }
+    </button>
+  }
+
+  @if (hasChildren && open()) {
+    <ul class="menu-children">
+      @for (hijo of item.hijos; track hijo.id) {
+        <app-menu-item [item]="hijo" />
+      }
+    </ul>
+  }
+</li>

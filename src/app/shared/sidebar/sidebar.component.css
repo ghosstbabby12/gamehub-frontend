@@ -1,0 +1,73 @@
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: rgba(6, 4, 16, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(124, 58, 237, 0.15);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.25rem 1rem 1rem;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.sidebar-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.8), transparent);
+}
+
+.sidebar-icon {
+  font-size: 1.2rem;
+  filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.8));
+}
+
+.sidebar-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  background: linear-gradient(135deg, #a78bfa, #00d4ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+.sidebar-nav {
+  padding: 0.25rem 0.5rem;
+  flex: 1;
+}
+
+.menu-root {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.sidebar-status {
+  font-size: 0.85rem;
+  color: rgba(136, 120, 170, 0.5);
+  padding: 0.5rem 1rem;
+  margin: 0;
+}
+
+.sidebar-error { color: #ef4444; }

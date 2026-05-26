@@ -1,0 +1,145 @@
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2>Panel Admin</h2>
+    <nav>
+      <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">📊 Dashboard</a>
+      <a routerLink="/admin/videojuegos" routerLinkActive="active">🎮 Videojuegos</a>
+      <a routerLink="/admin/categorias" routerLinkActive="active">🗂️ Categorías</a>
+      <a routerLink="/admin/pedidos" routerLinkActive="active">📦 Pedidos</a>
+      <a routerLink="/admin/usuarios" routerLinkActive="active">👥 Usuarios</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-page-header">
+      <div>
+        <h1>Pedidos</h1>
+        <p>Gestiona todos los pedidos de la tienda</p>
+      </div>
+      <div class="header-actions">
+        <select [(ngModel)]="filtroEstado" (change)="applyFilter()" class="filter-select">
+          <option value="">Todos los estados</option>
+          @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+        </select>
+        <button class="btn-create" (click)="openCreateForm()">+ Nuevo pedido</button>
+      </div>
+    </div>
+
+    @if (successMsg) { <div class="alert-success">{{ successMsg }}</div> }
+    @if (errorMsg && !showCreateForm) { <div class="alert-error">{{ errorMsg }}</div> }
+
+    @if (showCreateForm) {
+      <div class="create-form-card">
+        <h3>Crear pedido manual</h3>
+        @if (errorMsg) { <div class="alert-error">{{ errorMsg }}</div> }
+        <div class="form-row">
+          <label>Correo del cliente</label>
+          <input type="email" [(ngModel)]="createCorreo" placeholder="cliente@correo.com" class="form-input" />
+        </div>
+        <div class="form-row">
+          <label>Estado inicial</label>
+          <select [(ngModel)]="createEstado" class="form-input">
+            @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+          </select>
+        </div>
+        <div class="items-section">
+          <label>Ítems</label>
+          @for (item of createItems; track $index) {
+            <div class="item-row">
+              <select [(ngModel)]="item.videojuegoId" class="item-select">
+                <option [value]="0">-- Seleccionar juego --</option>
+                @for (vj of videojuegos; track vj.id) {
+                  <option [value]="vj.id">{{ vj.titulo }} (${{ vj.precio }})</option>
+                }
+              </select>
+              <input type="number" [(ngModel)]="item.cantidad" min="1" class="qty-input" />
+              @if (createItems.length > 1) {
+                <button class="btn-remove-item" (click)="removeItem($index)">✕</button>
+              }
+            </div>
+          }
+          <button class="btn-add-item" (click)="addItem()">+ Agregar ítem</button>
+        </div>
+        <div class="form-actions">
+          <button class="btn-save" (click)="submitCreate()" [disabled]="saving">
+            {{ saving ? 'Guardando...' : 'Crear pedido' }}
+          </button>
+          <button class="btn-cancel" (click)="cancelCreate()">Cancelar</button>
+        </div>
+      </div>
+    }
+
+    @if (loading) {
+      <div class="state-msg"><span class="spinner"></span> Cargando...</div>
+    } @else if (filtered.length === 0) {
+      <div class="state-msg">No hay pedidos.</div>
+    } @else {
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Items</th>
+              <th>Estado</th>
+              <th>Cambiar estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of filtered; track p.id) {
+              <tr>
+                <td>{{ p.id }}</td>
+                <td class="col-cliente">
+                  <span class="cliente-nombre">{{ p.clienteNombre }}</span>
+                  <span class="cliente-email">{{ p.clienteCorreo }}</span>
+                </td>
+                <td>{{ p.fecha | date:'dd/MM/yyyy' }}</td>
+                <td>{{ p.total | currency:'USD':'symbol':'1.2-2' }}</td>
+                <td>{{ p.items.length }}</td>
+                <td><span [class]="'estado-badge ' + estadoClass(p.estado)">{{ p.estado }}</span></td>
+                <td>
+                  <select class="estado-select" [value]="p.estado"
+                    (change)="cambiarEstado(p, $any($event.target).value)">
+                    @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+                  </select>
+                </td>
+                <td class="actions-cell">
+                  <button class="btn-expand" (click)="toggleExpand(p.id)">
+                    {{ expandedId === p.id ? '▲' : '▼' }}
+                  </button>
+                  <button class="btn-delete" (click)="eliminar(p.id)">Eliminar</button>
+                </td>
+              </tr>
+              @if (expandedId === p.id) {
+                <tr class="detail-row">
+                  <td colspan="8">
+                    <div class="detail-panel">
+                      <table class="detail-table">
+                        <thead>
+                          <tr><th>Juego</th><th>Cant.</th><th>Precio unit.</th><th>Subtotal</th></tr>
+                        </thead>
+                        <tbody>
+                          @for (item of p.items; track item.id) {
+                            <tr>
+                              <td>{{ item.videojuegoTitulo }}</td>
+                              <td>{{ item.cantidad }}</td>
+                              <td>{{ item.precioUnitario | currency:'USD':'symbol':'1.2-2' }}</td>
+                              <td>{{ item.subtotal | currency:'USD':'symbol':'1.2-2' }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </main>
+</div>

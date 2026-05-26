@@ -1,0 +1,83 @@
+<div class="tienda-container">
+  <div class="tienda-header">
+    <h1>Tienda de Videojuegos</h1>
+    <p>Descubre los mejores títulos</p>
+  </div>
+
+  <div class="filters-bar">
+    <div class="search-wrap">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (input)="onSearch()"
+        placeholder="Buscar por título..."
+        class="search-input"
+      />
+    </div>
+
+    <select [(ngModel)]="selectedCategoria" (change)="onCategoriaChange()" class="filter-select">
+      <option value="">Todas las categorías</option>
+      @for (cat of categorias; track cat.id) {
+        <option [value]="cat.id">{{ cat.nombre }}</option>
+      }
+    </select>
+
+    <select [(ngModel)]="selectedPlataforma" (change)="onPlataformaChange()" class="filter-select">
+      <option value="">Todas las plataformas</option>
+      @for (p of plataformas; track p) {
+        <option [value]="p">{{ p }}</option>
+      }
+    </select>
+  </div>
+
+  @if (cartMessage) {
+    <div class="toast-success">{{ cartMessage }}</div>
+  }
+
+  @if (loading) {
+    <div class="state-msg">
+      <span class="spinner"></span>
+      Cargando juegos...
+    </div>
+  } @else if (videojuegos.length === 0) {
+    <div class="state-msg empty">No se encontraron juegos para tu búsqueda.</div>
+  } @else {
+    <div class="games-grid">
+      @for (game of videojuegos; track game.id) {
+        <div class="game-card">
+          <a [routerLink]="['/tienda', game.id]" class="game-image-wrap">
+            @if (game.imagenUrl) {
+              <img [src]="game.imagenUrl" [alt]="game.titulo" class="game-img" />
+            } @else {
+              <div class="game-img-placeholder">🎮</div>
+            }
+            <span class="platform-badge">{{ game.plataforma }}</span>
+          </a>
+          <div class="game-body">
+            <a [routerLink]="['/tienda', game.id]" class="game-title-link">
+              <h3 class="game-title">{{ game.titulo }}</h3>
+            </a>
+            <p class="game-genre">{{ game.genero }}</p>
+            <p class="game-desc">{{ game.descripcion }}</p>
+            <div class="game-footer">
+              <span class="game-price">{{ game.precio | currency:'USD':'symbol':'1.2-2' }}</span>
+              <button
+                class="btn-cart"
+                (click)="agregarAlCarrito(game.id)"
+                [disabled]="addingToCart === game.id || game.stock === 0"
+              >
+                @if (game.stock === 0) {
+                  Sin stock
+                } @else if (addingToCart === game.id) {
+                  Agregando...
+                } @else {
+                  + Carrito
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

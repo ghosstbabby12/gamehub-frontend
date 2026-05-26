@@ -1,0 +1,69 @@
+<div class="carrito-container">
+  <h1>Mi Carrito</h1>
+
+  @if (loading) {
+    <div class="state-msg"><span class="spinner"></span> Cargando...</div>
+  } @else if (!carrito || carrito.items.length === 0) {
+    <div class="empty-cart">
+      <span class="empty-icon">🛒</span>
+      <h2>Tu carrito está vacío</h2>
+      <p>Explora la tienda y agrega tus juegos favoritos</p>
+      <button class="btn-primary" (click)="irATienda()">Ir a la tienda</button>
+    </div>
+  } @else {
+    <div class="carrito-layout">
+      <div class="carrito-items">
+        @for (item of carrito.items; track item.id) {
+          <div class="carrito-item">
+            <div class="item-img-wrap">
+              @if (item.imagenUrl) {
+                <img [src]="item.imagenUrl" [alt]="item.videojuegoTitulo" />
+              } @else {
+                <div class="img-placeholder">🎮</div>
+              }
+            </div>
+            <div class="item-info">
+              <h3>{{ item.videojuegoTitulo }}</h3>
+              <span class="item-price">{{ item.precioUnitario | currency:'USD':'symbol':'1.2-2' }} c/u</span>
+            </div>
+            <div class="qty-controls">
+              <button class="qty-btn" (click)="actualizarCantidad(item.id, item.cantidad - 1)">−</button>
+              <span class="qty-value">{{ item.cantidad }}</span>
+              <button class="qty-btn" (click)="actualizarCantidad(item.id, item.cantidad + 1)">+</button>
+            </div>
+            <div class="item-subtotal">
+              {{ item.subtotal | currency:'USD':'symbol':'1.2-2' }}
+            </div>
+            <button class="btn-remove" (click)="eliminarItem(item.id)" title="Eliminar">✕</button>
+          </div>
+        }
+      </div>
+
+      <div class="carrito-summary">
+        <h2>Resumen</h2>
+        <div class="summary-row">
+          <span>Productos ({{ carrito.items.length }})</span>
+          <span>{{ carrito.total | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="summary-total">
+          <span>Total</span>
+          <span>{{ carrito.total | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+
+        @if (mensajeError) {
+          <div class="alert-error">{{ mensajeError }}</div>
+        }
+
+        <button
+          class="btn-checkout"
+          (click)="checkout()"
+          [disabled]="checkingOut"
+        >
+          @if (checkingOut) { Procesando... } @else { Confirmar Pedido }
+        </button>
+
+        <button class="btn-vaciar" (click)="vaciarCarrito()">Vaciar carrito</button>
+      </div>
+    </div>
+  }
+</div>

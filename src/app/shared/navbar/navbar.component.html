@@ -1,0 +1,24 @@
+<nav class="navbar">
+  <a class="navbar-brand" routerLink="/tienda">
+    <span class="brand-icon">🎮</span>
+    <span class="brand-name">GameHub</span>
+  </a>
+
+  <div class="navbar-links">
+    @if (user(); as u) {
+      <a routerLink="/tienda" routerLinkActive="active">Tienda</a>
+      @if (u.rol === 'ADMIN') {
+        <a routerLink="/admin" routerLinkActive="active">Admin</a>
+      } @else {
+        <a routerLink="/carrito" routerLinkActive="active">Carrito</a>
+        <a routerLink="/mis-pedidos" routerLinkActive="active">Pedidos</a>
+      }
+      <a routerLink="/perfil" routerLinkActive="active">{{ u.nombre }}</a>
+      <button class="btn-logout" (click)="logout()">Salir</button>
+    } @else {
+      <a routerLink="/tienda" routerLinkActive="active">Tienda</a>
+      <a routerLink="/login" routerLinkActive="active">Login</a>
+      <a routerLink="/register" routerLinkActive="active" class="btn-register">Registro</a>
+    }
+  </div>
+</nav>

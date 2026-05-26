@@ -1,0 +1,104 @@
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2>Panel Admin</h2>
+    <nav>
+      <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">📊 Dashboard</a>
+      <a routerLink="/admin/videojuegos" routerLinkActive="active">🎮 Videojuegos</a>
+      <a routerLink="/admin/categorias" routerLinkActive="active">🗂️ Categorías</a>
+      <a routerLink="/admin/pedidos" routerLinkActive="active">📦 Pedidos</a>
+      <a routerLink="/admin/usuarios" routerLinkActive="active">👥 Usuarios</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-page-header">
+      <div>
+        <h1>Categorías</h1>
+        <p>Gestiona las categorías del catálogo</p>
+      </div>
+      <button class="btn-new" (click)="showCreate()">+ Nueva Categoría</button>
+    </div>
+
+    @if (successMsg) {
+      <div class="alert-success">{{ successMsg }}</div>
+    }
+
+    @if (showForm) {
+      <div class="form-panel">
+        <h2>{{ editingId ? 'Editar Categoría' : 'Nueva Categoría' }}</h2>
+        <form #cForm="ngForm" (ngSubmit)="save()" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre *</label>
+              <input
+                name="nombre"
+                type="text"
+                [(ngModel)]="nombre"
+                #nombreF="ngModel"
+                required
+                placeholder="Ej. Aventura"
+                [class.input-error]="nombreF.invalid && nombreF.touched"
+              />
+              @if (nombreF.invalid && nombreF.touched) {
+                <span class="field-error">El nombre es requerido</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Descripción</label>
+              <input
+                name="descripcion"
+                type="text"
+                [(ngModel)]="descripcion"
+                placeholder="Descripción de la categoría"
+              />
+            </div>
+          </div>
+
+          @if (errorMsg) {
+            <div class="alert-error">{{ errorMsg }}</div>
+          }
+
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" (click)="cancelForm()">Cancelar</button>
+            <button type="submit" class="btn-save" [disabled]="cForm.invalid || saving">
+              @if (saving) { Guardando... } @else { Guardar }
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (loading) {
+      <div class="state-msg"><span class="spinner"></span> Cargando...</div>
+    } @else if (categorias.length === 0) {
+      <div class="state-msg">No hay categorías registradas.</div>
+    } @else {
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cat of categorias; track cat.id) {
+              <tr>
+                <td>{{ cat.id }}</td>
+                <td class="cat-nombre">{{ cat.nombre }}</td>
+                <td class="cat-desc">{{ cat.descripcion }}</td>
+                <td class="col-actions">
+                  <button class="btn-edit" (click)="showEdit(cat)">Editar</button>
+                  <button class="btn-delete" (click)="eliminar(cat.id)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </main>
+</div>
