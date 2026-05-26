@@ -3,7 +3,7 @@ const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const distPath = path.join(__dirname, 'dist/gamehub-frontend/browser');
+const distPath = path.join(__dirname, 'browser');
 
 app.use(express.static(distPath));
 
