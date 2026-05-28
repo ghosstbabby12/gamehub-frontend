@@ -18,6 +18,10 @@ export class AdminUsuariosComponent implements OnInit {
   usuarios: UsuarioAdmin[] = [];
   filtered: UsuarioAdmin[] = [];
   filtroRol = '';
+  searchQuery = '';
+
+  get admins(): UsuarioAdmin[] { return this.filtered.filter(u => u.rol === 'ADMIN'); }
+  get clients(): UsuarioAdmin[] { return this.filtered.filter(u => u.rol !== 'ADMIN'); }
   loading = false;
   successMsg = '';
   errorMsg = '';
@@ -43,9 +47,24 @@ export class AdminUsuariosComponent implements OnInit {
   }
 
   applyFilter(): void {
-    this.filtered = this.filtroRol
+    let list = this.filtroRol
       ? this.usuarios.filter((u) => u.rol === this.filtroRol)
       : [...this.usuarios];
+    const q = this.searchQuery.trim().toLowerCase();
+    if (q) {
+      list = list.filter(u =>
+        u.nombre.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+      );
+    }
+    this.filtered = list;
+  }
+
+  onSearch(): void {
+    this.applyFilter();
+  }
+
+  getInitials(nombre: string): string {
+    return nombre.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
   }
 
   startEdit(u: UsuarioAdmin): void {

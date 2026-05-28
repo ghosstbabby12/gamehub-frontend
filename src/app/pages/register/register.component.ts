@@ -20,6 +20,8 @@ export class RegisterComponent {
   password = '';
   errorMsg = '';
   loading = false;
+  registered = false;
+  countdown = 3;
 
   onSubmit(): void {
     this.loading = true;
@@ -27,8 +29,9 @@ export class RegisterComponent {
     this.authService.register(this.nombre, this.email, this.password).subscribe({
       next: () => {
         this.loading = false;
+        this.registered = true;
         this.cdr.markForCheck();
-        this.router.navigate(['/tienda']);
+        this.startRedirectCountdown();
       },
       error: (err) => {
         this.loading = false;
@@ -36,5 +39,26 @@ export class RegisterComponent {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  cancel(): void {
+    this.router.navigate(['/']);
+  }
+
+  goToStore(): void {
+    this.router.navigate(['/tienda']);
+  }
+
+  private startRedirectCountdown(): void {
+    const tick = () => {
+      this.countdown--;
+      this.cdr.markForCheck();
+      if (this.countdown > 0) {
+        setTimeout(tick, 1000);
+      } else {
+        this.router.navigate(['/tienda']);
+      }
+    };
+    setTimeout(tick, 1000);
   }
 }

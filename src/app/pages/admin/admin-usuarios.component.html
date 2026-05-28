@@ -16,61 +16,147 @@
         <h1>Usuarios</h1>
         <p>Gestiona los usuarios registrados</p>
       </div>
-      <select [(ngModel)]="filtroRol" (change)="applyFilter()" class="filter-select">
-        <option value="">Todos los roles</option>
-        <option value="USER">USER</option>
-        <option value="ADMIN">ADMIN</option>
-      </select>
+
+      <div class="header-controls">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" [(ngModel)]="searchQuery" (input)="onSearch()"
+            placeholder="Buscar por nombre o email..." class="search-input" />
+        </div>
+        <div class="filter-tabs">
+          <button class="tab-btn" [class.active]="filtroRol === ''"      (click)="filtroRol=''; applyFilter()">Todos</button>
+          <button class="tab-btn" [class.active]="filtroRol === 'USER'"  (click)="filtroRol='USER'; applyFilter()">Clientes</button>
+          <button class="tab-btn" [class.active]="filtroRol === 'ADMIN'" (click)="filtroRol='ADMIN'; applyFilter()">Admins</button>
+        </div>
+      </div>
     </div>
 
     @if (successMsg) { <div class="alert-success">{{ successMsg }}</div> }
     @if (errorMsg)   { <div class="alert-error">{{ errorMsg }}</div> }
 
     @if (loading) {
-      <div class="state-msg"><span class="spinner"></span> Cargando...</div>
+      <div class="state-msg"><span class="spinner"></span> Cargando usuarios...</div>
     } @else if (filtered.length === 0) {
-      <div class="state-msg">No hay usuarios.</div>
-    } @else {
-      <div class="table-wrap">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (u of filtered; track u.id) {
-              <tr>
-                <td>{{ u.id }}</td>
-                <td class="col-nombre">{{ u.nombre }}</td>
-                <td class="col-email">{{ u.email }}</td>
-                <td>
-                  @if (editingId === u.id) {
+      <div class="state-msg">No se encontraron usuarios.</div>
+
+    } @else if (filtroRol === '') {
+
+      <!-- ── Sección Administradores ── -->
+      @if (admins.length > 0) {
+        <div class="section-block">
+          <div class="section-heading admin-heading">
+            <span class="section-dot admin-dot"></span>
+            Administradores
+            <span class="section-count">{{ admins.length }}</span>
+          </div>
+          <div class="users-grid">
+            @for (u of admins; track u.id) {
+              <div class="user-card is-admin">
+                <div class="card-avatar admin-avatar">{{ getInitials(u.nombre) }}</div>
+                <div class="card-info">
+                  <h3 class="card-name">{{ u.nombre }}</h3>
+                  <span class="card-role badge-admin">{{ u.rol }}</span>
+                </div>
+                <div class="card-email">
+                  <span class="email-label">Email</span>
+                  <span class="email-value">{{ u.email }}</span>
+                </div>
+                @if (editingId === u.id) {
+                  <div class="card-edit-row">
                     <select [(ngModel)]="editRol" class="rol-select">
                       <option value="USER">USER</option>
                       <option value="ADMIN">ADMIN</option>
                     </select>
-                  } @else {
-                    <span [class]="'rol-badge ' + rolClass(u.rol)">{{ u.rol }}</span>
-                  }
-                </td>
-                <td class="actions-cell">
-                  @if (editingId === u.id) {
                     <button class="btn-save" (click)="saveRol(u)">Guardar</button>
-                    <button class="btn-cancel" (click)="cancelEdit()">Cancelar</button>
-                  } @else {
-                    <button class="btn-edit" (click)="startEdit(u)">Editar</button>
-                    <button class="btn-delete" (click)="eliminar(u.id)">Eliminar</button>
+                    <button class="btn-cancel" (click)="cancelEdit()">✕</button>
+                  </div>
+                }
+                <div class="card-actions">
+                  @if (editingId !== u.id) {
+                    <button class="btn-edit" (click)="startEdit(u)">Editar Rol</button>
                   }
-                </td>
-              </tr>
+                  <button class="btn-delete" (click)="eliminar(u.id)">Eliminar</button>
+                </div>
+              </div>
             }
-          </tbody>
-        </table>
+          </div>
+        </div>
+      }
+
+      <!-- ── Sección Clientes ── -->
+      @if (clients.length > 0) {
+        <div class="section-block">
+          <div class="section-heading client-heading">
+            <span class="section-dot client-dot"></span>
+            Clientes
+            <span class="section-count">{{ clients.length }}</span>
+          </div>
+          <div class="users-grid">
+            @for (u of clients; track u.id) {
+              <div class="user-card">
+                <div class="card-avatar">{{ getInitials(u.nombre) }}</div>
+                <div class="card-info">
+                  <h3 class="card-name">{{ u.nombre }}</h3>
+                  <span class="card-role badge-user">{{ u.rol }}</span>
+                </div>
+                <div class="card-email">
+                  <span class="email-label">Email</span>
+                  <span class="email-value">{{ u.email }}</span>
+                </div>
+                @if (editingId === u.id) {
+                  <div class="card-edit-row">
+                    <select [(ngModel)]="editRol" class="rol-select">
+                      <option value="USER">USER</option>
+                      <option value="ADMIN">ADMIN</option>
+                    </select>
+                    <button class="btn-save" (click)="saveRol(u)">Guardar</button>
+                    <button class="btn-cancel" (click)="cancelEdit()">✕</button>
+                  </div>
+                }
+                <div class="card-actions">
+                  @if (editingId !== u.id) {
+                    <button class="btn-edit" (click)="startEdit(u)">Editar Rol</button>
+                  }
+                  <button class="btn-delete" (click)="eliminar(u.id)">Eliminar</button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    } @else {
+      <!-- Filtro activo (ADMIN o USER): grid simple -->
+      <div class="users-grid">
+        @for (u of filtered; track u.id) {
+          <div class="user-card" [class.is-admin]="u.rol === 'ADMIN'">
+            <div class="card-avatar" [class.admin-avatar]="u.rol === 'ADMIN'">{{ getInitials(u.nombre) }}</div>
+            <div class="card-info">
+              <h3 class="card-name">{{ u.nombre }}</h3>
+              <span [class]="'card-role ' + rolClass(u.rol)">{{ u.rol }}</span>
+            </div>
+            <div class="card-email">
+              <span class="email-label">Email</span>
+              <span class="email-value">{{ u.email }}</span>
+            </div>
+            @if (editingId === u.id) {
+              <div class="card-edit-row">
+                <select [(ngModel)]="editRol" class="rol-select">
+                  <option value="USER">USER</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+                <button class="btn-save" (click)="saveRol(u)">Guardar</button>
+                <button class="btn-cancel" (click)="cancelEdit()">✕</button>
+              </div>
+            }
+            <div class="card-actions">
+              @if (editingId !== u.id) {
+                <button class="btn-edit" (click)="startEdit(u)">Editar Rol</button>
+              }
+              <button class="btn-delete" (click)="eliminar(u.id)">Eliminar</button>
+            </div>
+          </div>
+        }
       </div>
     }
   </main>

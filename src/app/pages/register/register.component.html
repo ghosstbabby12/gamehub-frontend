@@ -1,93 +1,98 @@
 <div class="auth-wrapper">
   <div class="auth-card">
-    <div class="auth-header">
-      <span class="auth-icon">🎮</span>
-      <h1>Crear Cuenta</h1>
-      <p>Únete a la comunidad GameHub</p>
-    </div>
 
-    <form #registerForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
-      <div class="form-group">
-        <label for="nombre">Nombre</label>
-        <input
-          id="nombre"
-          type="text"
-          name="nombre"
-          [(ngModel)]="nombre"
-          #nombreField="ngModel"
-          required
-          minlength="2"
-          placeholder="Tu nombre"
-          [class.input-error]="nombreField.invalid && nombreField.touched"
-        />
-        @if (nombreField.invalid && nombreField.touched) {
-          <span class="field-error">
-            @if (nombreField.errors?.['required']) {
-              El nombre es obligatorio
-            } @else {
-              Mínimo 2 caracteres
-            }
-          </span>
-        }
+    @if (registered) {
+      <div class="success-panel">
+        <span class="success-icon">✅</span>
+        <h2 class="success-title">¡Registro exitoso!</h2>
+        <p class="success-msg">Bienvenido/a, <strong>{{ nombre }}</strong>. Tu cuenta ha sido creada correctamente.</p>
+        <p class="success-redirect">Redirigiendo a la tienda en <strong>{{ countdown }}</strong>s...</p>
+        <button class="btn-primary" (click)="goToStore()">Ir a la tienda ahora</button>
+      </div>
+    } @else {
+      <div class="auth-header">
+        <span class="auth-icon">🎮</span>
+        <h1>Crear Cuenta</h1>
+        <p>Únete a la comunidad GameHub</p>
       </div>
 
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          name="email"
-          [(ngModel)]="email"
-          #emailField="ngModel"
-          required
-          email
-          placeholder="tu@email.com"
-          [class.input-error]="emailField.invalid && emailField.touched"
-        />
-        @if (emailField.invalid && emailField.touched) {
-          <span class="field-error">Ingresa un email válido</span>
+      <form #registerForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            type="text"
+            name="nombre"
+            [(ngModel)]="nombre"
+            #nombreField="ngModel"
+            required
+            minlength="2"
+            placeholder="Tu nombre"
+            [class.input-error]="nombreField.invalid && nombreField.touched"
+          />
+          @if (nombreField.invalid && nombreField.touched) {
+            <span class="field-error">
+              @if (nombreField.errors?.['required']) { El nombre es obligatorio }
+              @else { Mínimo 2 caracteres }
+            </span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            #emailField="ngModel"
+            required
+            email
+            placeholder="tu@email.com"
+            [class.input-error]="emailField.invalid && emailField.touched"
+          />
+          @if (emailField.invalid && emailField.touched) {
+            <span class="field-error">Ingresa un email válido</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            [(ngModel)]="password"
+            #passwordField="ngModel"
+            required
+            minlength="6"
+            placeholder="••••••••"
+            [class.input-error]="passwordField.invalid && passwordField.touched"
+          />
+          @if (passwordField.invalid && passwordField.touched) {
+            <span class="field-error">
+              @if (passwordField.errors?.['required']) { La contraseña es obligatoria }
+              @else { Mínimo 6 caracteres }
+            </span>
+          }
+        </div>
+
+        @if (errorMsg) {
+          <div class="alert-error">{{ errorMsg }}</div>
         }
-      </div>
 
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input
-          id="password"
-          type="password"
-          name="password"
-          [(ngModel)]="password"
-          #passwordField="ngModel"
-          required
-          minlength="6"
-          placeholder="••••••••"
-          [class.input-error]="passwordField.invalid && passwordField.touched"
-        />
-        @if (passwordField.invalid && passwordField.touched) {
-          <span class="field-error">
-            @if (passwordField.errors?.['required']) {
-              La contraseña es obligatoria
-            } @else {
-              Mínimo 6 caracteres
-            }
-          </span>
-        }
-      </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="cancel()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || loading">
+            @if (loading) { Creando cuenta... } @else { Crear Cuenta }
+          </button>
+        </div>
+      </form>
 
-      @if (errorMsg) {
-        <div class="alert-error">{{ errorMsg }}</div>
-      }
+      <p class="auth-link">
+        ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
+      </p>
+    }
 
-      <button
-        type="submit"
-        class="btn-primary"
-        [disabled]="registerForm.invalid || loading"
-      >
-        @if (loading) { Creando cuenta... } @else { Crear Cuenta }
-      </button>
-    </form>
-
-    <p class="auth-link">
-      ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
-    </p>
   </div>
 </div>
